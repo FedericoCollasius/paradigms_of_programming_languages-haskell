@@ -1,0 +1,100 @@
+Sea data AT a = Nil | Tern a (AT a) (AT a) (AT a) deriving Eq
+
+Definimos las funciones que vamos a utilizar para el desarollo de la demostracion. 
+elem :: (Eq a) => a -> [a] -> Bool
+elem x [] = False  {E0}
+elem x (y:ys) = x == y || elem x ys {E1}
+
+(++) :: [Integer] -> [Integer] -> [Integer]
+[] ++ ys = ys  {C0}
+(x:xs) ++ ys = x : (xs ++ ys) {C1}
+
+preorder :: Procesador (AT a) a
+preorder = foldAT (\r i c d -> [r] ++ i ++ c ++ d) []       {Pr}
+
+postorder :: Procesador (AT a) a
+postorder = foldAT (\r i c d -> i ++ c ++ d ++ [r]) [] {}       {PO}
+
+foldAT :: (a -> b -> b -> b -> b) -> b -> AT a -> b
+foldAT cAT cNil at = case at of
+                     Nil -> cNil
+                     Tern r i c d -> cAT r (rec i) (rec c) (rec d)
+    where rec = foldAT cAT cNil
+
+-----------------------------
+
+Queremos probar que:  P(t): ∀t::ATa.∀x::a.(elem x (preorder t) = elem x(postorder t))
+
+Si se cumple P(Nil) y ∀n::a. ∀i::AT a. ∀c:: AT a. ∀d:: AT a. P(i) y P(c) y P(d) → P(Tern a i c d)
+entonces ∀t::At a. P(t)
+
+Hacemos inducción estructural en t, desplegando definiciones y propiedades hasta probar que la implicación es verdadera. No copiamos el ∀x::a en cada paso, sabemos que está. 
+
+* Caso Base: Árbol vacío (Nil)
+P(Nil): elem x (preorder Nil) 
+= (elem x []) {def preorder (case Nil)}
+= elem x (postorder Nil)) {def postorder}
+Debido a que elem x [] = False {E0}
+
+--> Queda probado para P(Nil).
+
+* Caso Inductivo: Sea t un arbol ternario
+Hipotesis Inductiva: P(i), P(c) y P(d) --> 
+P(i): elem x (preorder i) = elem x (postorder i)
+P(c): elem x (preorder c) = elem x (postorder c)
+P(d): elem x (preorder d) = elem x (postorder d)
+
+QVQ: elem x (preorder (Tern r i c d)) = elem x (postorder (Tern r i c d))
+Donde:
+
+elem x (preorder (Tern r i c d)) {Pr}
+= elem x (foldAT (\r i c d -> [r] ++ i ++ c ++ d) [] (Tern r i c d)) = {foldAT}
+= elem x ([r] ++ preorder i ++ preorder c ++ preorder d)
+
+Desarrollemos elem x (y ++ z), siendo x un elemento, y, z listas de elementos.
+Queremos ver que elem x (y ++ z) = elem x y || elem x z, probemos por inducción. 
+- Caso base: y = [] --> y ++ z = [] ++ z = z
+elem x (y++z) 
+= elem x ([] ++ z)
+= elem x z  {C0}
+= false || elem x z {boolenos}
+= elem x y || elem x z {E0}
+
+- Caso indutivo: y = (a:ys) --> y ++ z = a : (ys ++ z)
+Hipotesis inductiva: Supongamos que la propiedad se cumple para cualquier lista ys, es decir, elem x (ys ++ z) = elem x ys || elem x z.
+
+elem x (y++z) =
+elem x ((a:ys) ++ z)
+= elem x (a : (ys ++ z)) {C1}
+= x == a || elem x (ys ++ z) {E1}
+= x == a || elem x ys || elem x z {HI}
+= elem x (a:ys) || elem x z {E1}
+
+Por lo tanto, se cumple la propiedad para (a:ys) y hemos completado la demostración de la propiedad de concatenación para elem.
+
+Por lo tanto elem x ([r] ++ preorder i ++ preorder c ++ preorder d) = 
+elem x ((([r] ++ preorder i) ++ preorder c) ++ preorder d) = {LEMA}
+elem x (([r] ++ preorder i) ++ preorder c) || elem x (preorder d) = {LEMA}
+elem x ([r] ++ preorder i) || elem x (preorder c) || elem x (preorder d) = {LEMA}
+elem x [r] || elem x (preorder i) || elem x (preorder c) || elem x (preorder d)
+
+Por extensionalidad de boolenos tenemos que elem x [r] = True o elem x [r] = false.
+* Caso elem x [r] = True:
+elem x [r] || elem x (preorder i) || elem x (preorder c) || elem x (preorder d) =
+elem x [r] {true} =
+elem x [r] || elem x (postorder i) || elem x (postorder c) || elem x (postorder d) {BOOL} = {por manipilacion de ||}
+elem x (postorder i) || elem x (postorder c) || elem x (postorder d) || elem x [r] {LEMA} =
+elem x (postorder i ++ postorder c ++ postorder d ++ [r])
+
+Que es lo que queriamos probar.
+
+* Caso elem x [r] = false:
+elem x [r] || elem x (preorder i) || elem x (preorder c) || elem x (preorder d) =
+false || elem x (preorder i) || elem x (preorder c) || elem x (preorder d) {false} =
+elem x (preorder i) || elem x (preorder c) || elem x (preorder d) {HI} =
+elem x (postorder i) || elem x (postorder c) || elem x (postorder d) {false} =
+elem x (postorder i) || elem x (postorder c) || elem x (postorder d) || elem x [r]  {LEMA} =
+elem x (postorder i ++ postorder c ++ postorder d ++ [r])
+
+Que es lo que queriamos probar.
+Conclusion: Como hemos probado que P(Nil) y ∀n::a. ∀i::AT a. ∀c:: AT a. ∀d:: AT a. P(i) y P(c) y P(d) → P(Tern a i c d) entonces ∀t::At a. P(t) es verdadero.
