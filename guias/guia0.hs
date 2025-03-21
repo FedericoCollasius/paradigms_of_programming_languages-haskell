@@ -120,7 +120,7 @@ vacioAB _ = False
 
 -- b
 negacionAB :: AB Bool -> AB Bool
-nagacionAB Nil = Nil
+negacionAB Nil = Nil
 negacionAB (Bin i r d) = Bin (negacionAB i) (not r) (negacionAB d)
 
 -- c
