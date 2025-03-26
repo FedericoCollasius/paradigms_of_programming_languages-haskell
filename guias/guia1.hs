@@ -11,11 +11,11 @@ max2 x y
 normaVectorial :: Float -> Float -> Float
 normaVectorial x y = sqrt(x**2 + y**2)
 
-subtract2 :: Float -> Float -> Float 
-subtract2 = flip (-)
+subtract1 :: Float -> Float -> Float 
+subtract1 = flip (-)
 
 predecesor :: Float -> Float 
-predecesor = subtract2 1
+predecesor = subtract1 1
 
 evaluarEnCero :: (Float -> Float) -> Float
 evaluarEnCero = \f -> f 0 
@@ -31,7 +31,7 @@ flipAll :: [(Float -> Float -> Float)] -> [(Float -> Float -> Float)]
 flipAll = map flip
 
 -- Ohhhh, no aplico flip a una funcion dos veces, sino sí seria (a -> b -> c) -> (a - >b -> c) sino que 
--- le aplico flipa  flip
+-- le aplico flip a flip
 -- Funcion, flip1 :: (a -> b -> c) -> b -> a -> c
 -- Argumento, flip2 :: (a' -> b' -> c') -> b' -> a' -> c'
 -- flip2 tiene que matchear con el argumento de flip1
@@ -64,7 +64,7 @@ normaVectorialCurry x y = sqrt(x**2 + y**2)
 -- Ejercicio 2
 -- i.
 -- El chiste es que le saca los parentesis
-curry :: ( (a,b) -> c) -> (a -> (b -> c))
+curry :: ((a,b) -> c) -> (a -> (b -> c)) 
 curry f x y = f (x,y) 
 
 -- ii.
@@ -114,12 +114,3 @@ sumaAltInv :: Num a => [a] -> a
 sumaAltInv = foldl (flip (-)) 0 
 
 
-
--- Ejercicio 4
--- i.
--- mapconcat :: (a -> [b]) -> [a] -> [b]
--- take :: Int -> [c] -> [c]
--- drop :: Int -> [c] -> [c]
--- map :: (d -> e) -> [d] -> [e]
-permutaciones :: a -> [[a]]
-permutaciones = 
