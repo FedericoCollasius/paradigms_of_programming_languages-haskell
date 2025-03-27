@@ -114,3 +114,64 @@ sumaAltInv :: Num a => [a] -> a
 sumaAltInv = foldl (flip (-)) 0 
 
 
+
+-- Ejercico 5
+elementosEnPosicionesPares :: [a] -> [a]
+elementosEnPosicionesPares [] = []
+elementosEnPosicionesPares (x:xs) = if null xs
+                                      then [x]
+                                      else x : elementosEnPosicionesPares (tail xs)
+
+-- 1. El caso base es un valor fijo: []
+-- 2. Pero en el paso recursivo no usa xs sino que tail xs
+-- Por lo tanto no es recursion estructural 
+
+entrelazar :: [a] -> [a] -> [a]
+entrelazar [] = id
+entrelazar (x:xs) = \ys -> if null ys
+                              then x : entrelazar xs []
+                              else x : head ys : entrelazar xs (tail ys)
+
+-- 1. El caso base es un valor fijo: entrelazar [] = id [] = []
+-- 2. 
+
+--entrelazar :: [a] -> [a] -> [a]
+--entrelazar (x:xs) (y:ys) = foldr ( foldr (\y acc -> ) [] (y:ys) ) [] (x:xs)
+
+
+
+--- Ejercicio 6
+recr :: (a -> [a] -> b -> b) -> b -> [a] -> b
+recr _ z []     = z
+recr f z (x:xs) = f x xs (recr f z xs)
+
+-- a. Dados un elemento y una lista devuelve el resultado de eliminar de la lista la primera aparicion del elemento (si está presente)
+
+sacarUna :: Eq a => a -> [a] -> [a]
+sacarUna e [] = []
+sacarUna e (x:xs) = if e == x then xs else x : (sacarUna e xs)
+
+sacarUnaRecr :: Eq a => a -> [a] -> [a]
+sacarUnaRecr e = recr (\x xs r -> if x == e then xs else x : r) []
+
+-- b. ¿Por qué el esquema de recursión estructural (foldr) no es adecuado para implementar la función sacarUna del punto anterior?
+
+-- Porque foldr ...
+
+-- c. Inserta un elemento en una lista ordenada (de manera creciente), de manera que se preserva el ordenamiento.
+
+insertarOrdenado :: Ord a => a -> [a] -> [a]
+insertarOrdenado e = recr (\x xs r -> if x > e then e:x:xs else x:r) []
+
+
+
+-- Ejercicio 7
+-- i. Una versión de map que toma una función currificada de dos argumentos y una lista de pares de valores, y devuelve la lista de aplicaciones de la función a cada par. Pista: recordar curry y uncurry.
+
+mapPares :: (a -> b -> c) -> [(a,b)] -> [c]
+mapPares f = foldr ((:) . Guia1.uncurry f) [] 
+
+-- ii. Dadas dos listas arma una lista de pares que contiene, en cada posición, el elementocorrespondiente a esa posición en cada una de las listas. Si una de las listas es más larga que la otra,ignorar los elementos que sobran (el resultado tendrá la longitud de la lista más corta). Esta función en Haskell se llama zip. Pista: aprovechar la currificación y utilizar evaluación parcial.
+
+armarPares :: [a] -> [b] -> [(a,b)]
+armarPares =  
