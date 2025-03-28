@@ -171,7 +171,17 @@ insertarOrdenado e = recr (\x xs r -> if x > e then e:x:xs else x:r) []
 mapPares :: (a -> b -> c) -> [(a,b)] -> [c]
 mapPares f = foldr ((:) . Guia1.uncurry f) [] 
 
--- ii. Dadas dos listas arma una lista de pares que contiene, en cada posición, el elementocorrespondiente a esa posición en cada una de las listas. Si una de las listas es más larga que la otra,ignorar los elementos que sobran (el resultado tendrá la longitud de la lista más corta). Esta función en Haskell se llama zip. Pista: aprovechar la currificación y utilizar evaluación parcial.
+-- ii. Dadas dos listas arma una lista de pares que contiene, en cada posición, el elemento correspondiente a esa posición en cada una de las listas. Si una de las listas es más larga que la otra,ignorar los elementos que sobran (el resultado tendrá la longitud de la lista más corta). Esta función en Haskell se llama zip. Pista: aprovechar la currificación y utilizar evaluación parcial.
 
 armarPares :: [a] -> [b] -> [(a,b)]
-armarPares =  
+armarPares xs [] = []
+armarPares [] ys = []
+armarPares (x:xs) (y:ys) = (x, y) : armarPares xs ys
+
+-- iii. Una variante de mapPares, que toma una función currificada cada de dos argumentos y dos listas (de igual longitud), y devuelve una lista de aplicaciones de la función a cada elemento correspondiente de las dos listas. Esta función en Haskell se llama zipWith.
+
+mapDoble :: (a -> b -> c) -> [a] -> [b] -> [c] 
+mapDoble f [] _ = [] 
+mapDoble f xs ys = mapPares f (armarPares xs ys) 
+
+
