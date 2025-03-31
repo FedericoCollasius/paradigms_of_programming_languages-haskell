@@ -135,7 +135,8 @@ entrelazar (x:xs) = \ys -> if null ys
 -- 1. El caso base es un valor fijo: entrelazar [] = id [] = []
 -- 2.
 
-
+entrelazarFoldr :: [a] -> )[a] -> [a]
+entrelazarFoldr = foldr(\x rec ys -> if null ys then x : rec [] else x : head ys : rec $ tail ys) id
 
 
 --- Ejercicio 6
@@ -171,8 +172,6 @@ mapPares f = foldr ((:) . Guia1.uncurry f) []
 
 -- ii. Dadas dos listas arma una lista de pares que contiene, en cada posición, el elemento correspondiente a esa posición en cada una de las listas. Si una de las listas es más larga que la otra,ignorar los elementos que sobran (el resultado tendrá la longitud de la lista más corta). Esta función en Haskell se llama zip. Pista: aprovechar la currificación y utilizar evaluación parcial.
 
-<<<<<<< HEAD
-=======
 armarPares :: [a] -> [b] -> [(a,b)]
 armarPares xs [] = []
 armarPares [] ys = []
@@ -182,10 +181,8 @@ armarPares (x:xs) (y:ys) = (x, y) : armarPares xs ys
 
 mapDoble :: (a -> b -> c) -> [a] -> [b] -> [c] 
 mapDoble f [] _ = [] 
-mapDoble f xs ys = mapPares f (armarPares xs ys) 
+mapDoble f xs ys = mapPares f $ armarPares xs ys  
 
-
->>>>>>> 7018911522b6e3819c869ddf15c3ec9b3f24208c
 -- Clase Practica 25/03/2025
 
 -- Que tipo tiene flip ($) ?
