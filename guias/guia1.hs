@@ -123,7 +123,7 @@ elementosEnPosicionesPares (x:xs) = if null xs
                                       else x : elementosEnPosicionesPares (tail xs)
 
 -- 1. El caso base es un valor fijo: []
--- 2. Pero en el paso recursivo no usa xs sino que tail xs
+-- 2. Pero en el paso recursivo no usa xs sino que tail xs. Ademas usa xs por fuera de la recursion en "null xs"
 -- Por lo tanto no es recursion estructural 
 
 entrelazar :: [a] -> [a] -> [a]
@@ -133,10 +133,8 @@ entrelazar (x:xs) = \ys -> if null ys
                               else x : head ys : entrelazar xs (tail ys)
 
 -- 1. El caso base es un valor fijo: entrelazar [] = id [] = []
--- 2. 
+-- 2.
 
---entrelazar :: [a] -> [a] -> [a]
---entrelazar (x:xs) (y:ys) = foldr ( foldr (\y acc -> ) [] (y:ys) ) [] (x:xs)
 
 
 
@@ -173,5 +171,21 @@ mapPares f = foldr ((:) . Guia1.uncurry f) []
 
 -- ii. Dadas dos listas arma una lista de pares que contiene, en cada posición, el elementocorrespondiente a esa posición en cada una de las listas. Si una de las listas es más larga que la otra,ignorar los elementos que sobran (el resultado tendrá la longitud de la lista más corta). Esta función en Haskell se llama zip. Pista: aprovechar la currificación y utilizar evaluación parcial.
 
-armarPares :: [a] -> [b] -> [(a,b)]
-armarPares =  
+--armarPares :: [a] -> [b] -> [(a,b)]
+--armarPares = id 
+
+
+
+-- Clase Practica 25/03/2025
+
+-- Que tipo tiene flip ($) ?
+flipm :: a -> (a -> b) -> b
+flipm = flip ($)
+-- EJ: flipm 0 (+3) = 3
+
+-- Definir funcion equivalente a la siguiente funcion usando map y filter:
+listaComp :: (a -> Bool) -> (a -> b) -> [a] -> [b]
+listaComp p f xs = [f x | x <- xs, p x]
+
+listComp2 :: (a -> Bool) -> (a -> b) -> [a] -> [b]
+listComp2 p f = map f. filter p 
