@@ -135,10 +135,6 @@ entrelazar (x:xs) = \ys -> if null ys
 -- 1. El caso base es un valor fijo: entrelazar [] = id [] = []
 -- 2.
 
-entrelazarFoldr :: [a] -> )[a] -> [a]
-entrelazarFoldr = foldr(\x rec ys -> if null ys then x : rec [] else x : head ys : rec $ tail ys) id
-
-
 --- Ejercicio 6
 recr :: (a -> [a] -> b -> b) -> b -> [a] -> b
 recr _ z []     = z
